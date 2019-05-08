@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/stakedtechnologies/plasm-client/issues"
   },
-  "homepage": "https://github.com/stakedtechnologies/plasm-client#readme"
+  "homepage": "https://github.com/stakedtechnologies/plasm-client#readme",
+  "dependencies": {
+    "@polkadot/api": "^0.77.1"
+  }
 }
