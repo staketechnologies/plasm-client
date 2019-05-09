@@ -1,46 +1,48 @@
 {
     "TransactionInput": {
-        "txHash": "Hash",
-        "outIndex": "u32"
+      "txHash": "Hash",
+      "outIndex": "u32"
     },
     "TransactionOutput": {
-        "value": "u128",
-        "keys":  "Vec<AccountId>",
-        "quorum": "u32"
+      "value": "u128",
+      "keys": "Vec<AccountId>",
+      "quorum": "u32"
     },
     "Transaction": {
-        "inputs": "Vec<TransactionInput>",
-        "outputs": "Vec<TransactionOutput>",
-        "lock_time": "u64"
+      "inputs": "Vec<TransactionInput>",
+      "outputs": "Vec<TransactionOutput>",
+      "lock_time": "u64"
     },
     "SignedTransaction": {
-        "payload": "Transaction",
-        "signatures": "Vec<Signature>",
-        "public_keys": "Vec<AccountId>"
+      "payload": "Transaction",
+      "signatures": "Vec<Signature>",
+      "public_keys": "Vec<AccountId>"
     },
-    "ExitState": [
-        "Exiting",
-        "Challenging",
-        "Challenged",
-        "Finalized"
-    ],
     "Utxo": "(Transaction, u32)",
     "ExitStatus": {
-        "blkNum": "u64",
-        "utxo": "Utxo",
-        "started": "u64",
-        "expired": "u64",
-        "state": "ExitState"
+      "blkNum": "u64",
+      "utxo": "Utxo",
+      "started": "u64",
+      "expired": "u64"
+    },
+    "TxIn": {
+      "txHash": "Hash",
+      "outIndex": "u32"
     },
     "TxOut": {
-        "value": "u128",
-        "keys":  "Vec<AccountId>",
-        "quorum": "u32"
+      "value": "u128",
+      "keys": "Vec<AccountId>",
+      "quorum": "u32"
+    },
+    "Tx": {
+      "inputs": "Vec<TxIn>",
+      "outputs": "Vec<TxOut>",
+      "lock_time": "u64"
     },
     "SignedTx": {
-        "payload": "Tx",
-        "signatures": "Vec<Signature>",
-        "public_keys": "Vec<AccountId>"
+      "payload": "Tx",
+      "signatures": "Vec<Signature>",
+      "public_keys": "Vec<AccountId>"
     },
     "Value": "u64"
-}
+  }
