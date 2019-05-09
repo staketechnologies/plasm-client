@@ -1,14 +1,20 @@
-const { ApiPromise } = require('@polkadot/api');
-const fs = require('fs');
+#! /usr/bin/env node
+
+const { waitReady } = require('@polkadot/wasm-crypto');
+const { ChainManager } = require('./index');
 
 async function main() {
-    var typeList = JSON.parse(fs.readFileSync("./../../types.json"));
+    // waiting wasm load.
+    await waitReady();
 
-    const api = await ApiPromise.create({
-        types: typeList
-    });
+    const chainManager = new ChainManager(
+        process.env.TYPES_PATH,
+        process.env.OPERATOR_URI,
+        process.env.PARENT_END_POINT,
+        process.env.CHILD_END_POINT
+    );
 
-    console.log('boot main!')
+    await chainManager.start()
 }
 
 main()
