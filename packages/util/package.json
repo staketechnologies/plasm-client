@@ -5,7 +5,7 @@
   "main": "lib/entry.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node -r ./lib/entry"
+    "build": "tsc --build ./tsconfig.json"
   },
   "repository": {
     "type": "git",
