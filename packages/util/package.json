@@ -1,0 +1,30 @@
+{
+  "name": "wallet",
+  "version": "0.1.0",
+  "description": "Plasm wallet.",
+  "main": "lib/entry.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node -r ./lib/entry"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stakedtechnologies/plasm-client.git"
+  },
+  "keywords": [
+    "plasma",
+    "substrate"
+  ],
+  "author": "Takumi Yamashita",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/stakedtechnologies/plasm-client/issues"
+  },
+  "homepage": "https://github.com/stakedtechnologies/plasm-client#readme",
+  "dependencies": {
+    "@polkadot/api": "^0.78.1"
+  },
+  "devDependencies": {
+    "typescript": "^3.4.5"
+  }
+}

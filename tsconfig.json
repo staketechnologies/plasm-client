@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "module": "commonjs",
+        "lib": ["es2017", "dom"],
+        "declaration": true,
+        "sourceMap": true,
+        "importHelpers": true,
+
+        /* Strict Type-Checking Options */
+        "strict": true,
+        "skipLibCheck": true,
+
+        /* Module Resolution Options */
+        "esModuleInterop": true,
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
