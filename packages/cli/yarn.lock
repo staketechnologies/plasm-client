@@ -9,6 +9,13 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
+"@plasm/util@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@plasm/util/-/util-0.1.0.tgz#0216e14d543923888d1c5cd3a74b6754d0caa84b"
+  integrity sha512-LOIPBqw0rx8708bW6NxbIA+L392Qq5V1IwIoViPLtj1YaGlLvfASL8T5ZSV9NEMqbUTi3Tvgfm3WUVw2NLhlrA==
+  dependencies:
+    "@polkadot/api" "^0.78.1"
+
 "@polkadot/api-derive@^0.78.1":
   version "0.78.1"
   resolved "https://registry.yarnpkg.com/@polkadot/api-derive/-/api-derive-0.78.1.tgz#abb3e4cbd4d4f509e411e1b293f3fdd4c991f624"

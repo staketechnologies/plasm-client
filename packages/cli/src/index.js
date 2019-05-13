@@ -1,6 +1,6 @@
 const { AutoComplete, Form } = require('enquirer');
-const {deposit, exit, transfer } =  require('./commands');
-
+const {deposit, exit, transfer, setOwner} =  require('./commands');
+const { create } = require('@plasm/util')
 
 var default_p_endpoint = ''
 var default_c_endpoint = ''
@@ -21,11 +21,15 @@ const prompt = new Form({
 });
 
 prompt.run()
-  .then(value => start(value.parent_endpoint, value.child_endpoint))
+  .then(async value => {
+    parent = await create(value.parent_endpoint);
+    child = await create(value.child_endpoint);
+    await start(parent, child, null)
+  })
   .catch(console.error);
 
-const start = (parent, child) => {
-  console.log(`${parent}, ${child}`);
+const start = async (parent, child, owner) => {
+  console.log(`${parent}, ${child}, ${owner}`);
   const main_prompt = new AutoComplete({
     name: 'command',
     message: 'What do you do now?',
@@ -38,23 +42,26 @@ const start = (parent, child) => {
     ]
   });
   main_prompt.run()
-    .then(answer => {
+    .then(async answer => {
       console.log('Command:', answer)
       switch (answer) {
         case 'transfer':
-          transfer()
+          await transfer(child, owner)
           break;
         case 'deposit':
-          deposit()
+          await deposit(parent, owner)
           break;
         case 'exit':
-          exit()
+          await exit(parent, owner)
+          break;
+        case 'set_owner':
+          owner = await setOwner()
           break;
         default:
           console.log('unimplemented command.');
           break;
       }
-      start(parent, child)
+      start(parent, child, owner)
     })
     .catch(console.error);  
 }
