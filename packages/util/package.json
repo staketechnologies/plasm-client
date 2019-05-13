@@ -1,5 +1,5 @@
 {
-  "name": "wallet",
+  "name": "@plasm/util",
   "version": "0.1.0",
   "description": "Plasm wallet.",
   "main": "lib/entry.js",
