@@ -1,8 +1,8 @@
 {
   "name": "@plasm/util",
   "version": "0.1.0",
-  "description": "Plasm wallet.",
-  "main": "lib/entry.js",
+  "description": "Plasm front end API.",
+  "main": "dest/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --build ./tsconfig.json"
