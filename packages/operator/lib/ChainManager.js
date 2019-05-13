@@ -20,7 +20,7 @@ class ChainManager {
         this.child = null;
     }
 
-    async parent_handle() {
+    async parentHandle() {
         this.parent.query.system.events((events) => {
             console.log(white + `\nParentReceived ${events.length} events:`);
         
@@ -43,7 +43,7 @@ class ChainManager {
           });
     }
 
-    async child_handle() {
+    async childHandle() {
         this.child.query.system.events((events) => {
             console.log(white + `\nChildReceived ${events.length} events:`);
         
@@ -76,8 +76,12 @@ class ChainManager {
             types: this.typeList
         });
         
-        this.parent_handle();
-        this.child_handle();
+        this.parentHandle();
+        this.childHandle();
+    }
+
+    async submitHandle() {
+
     }
 }
 

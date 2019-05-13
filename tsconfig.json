@@ -1,21 +1,52 @@
 {
-    "compilerOptions": {
-        "target": "es2017",
-        "module": "commonjs",
-        "lib": ["es2017", "dom"],
-        "declaration": true,
-        "sourceMap": true,
-        "importHelpers": true,
+    "extends": "./node_modules/@polkadot/dev/config/tsconfig",
+    "compilerOptions":
+    {
+      "target": "es2017",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "jsx": "react",
+      "noImplicitAny": true,
+      "allowSyntheticDefaultImports": true,
+      "resolveJsonModule": true,
 
-        /* Strict Type-Checking Options */
-        "strict": true,
-        "skipLibCheck": true,
-
-        /* Module Resolution Options */
-        "esModuleInterop": true,
-    },
-    "exclude": [
-        "node_modules",
-        "dist"
-    ]
-}
+      "declaration": true,
+      "sourceMap": true,
+      "importHelpers": true,
+  
+      /* Module Resolution Options */
+      "esModuleInterop": true,
+  
+      "baseUrl": ".",
+      "paths":
+      {
+        "@polkadot/api": ["packages/api/src"],
+        "@polkadot/api/*": ["packages/api/src/*"],
+        "@polkadot/api-derive": ["packages/api-derive/src"],
+        "@polkadot/api-derive/*": ["packages/api-derive/src/*"],
+        "@polkadot/rpc-core": ["packages/rpc-core/src"],
+        "@polkadot/rpc-core/*": ["packages/rpc-core/src/*"],
+        "@polkadot/rpc-provider": ["packages/rpc-provider/src"],
+        "@polkadot/rpc-provider/*": ["packages/rpc-provider/src/*"],
+        "@polkadot/rpc-rx": ["packages/rpc-rx/src"],
+        "@polkadot/rpc-rx/*": ["packages/rpc-rx/src/*"],
+        "@polkadot/extrinsics": ["packages/type-extrinsics/src"],
+        "@polkadot/extrinsics/*": ["packages/type-extrinsics/src/*"],
+        "@polkadot/jsonrpc": ["packages/type-jsonrpc/src"],
+        "@polkadot/jsonrpc/*": ["packages/type-jsonrpc/src/*"],
+        "@polkadot/storage": ["packages/type-storage/src"],
+        "@polkadot/storage/*": ["packages/type-storage/src/*"],
+        "@polkadot/types": ["packages/types/src"],
+        "@polkadot/types/*": ["packages/types/src/*"]
+      },
+      "typeRoots": [
+        "./node_modules/@polkadot/ts",
+        "./node_modules/@types"
+      ],
+      
+      /* Strict Type-Checking Options */
+      "strict": true,
+      "skipLibCheck": true
+    }
+  }
+  

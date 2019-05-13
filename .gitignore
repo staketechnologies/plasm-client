@@ -221,6 +221,9 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
+# ts outputs directory dest
+dest/
+
 # End of https://www.gitignore.io/api/node,jspm,linux,macos,jetbrains+all
 Last Modified:
 05/08/2019 20:02:12

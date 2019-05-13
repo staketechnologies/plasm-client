@@ -1,20 +1,8 @@
 {
+    "extends": "../../tsconfig.json",
     "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "jsx": "react",
-      "outDir": "dest",
-      "strict": true,
-      "noImplicitAny": true,
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
-      "resolveJsonModule": true
+      "resolveJsonModule": true,
+      "outDir": "dest"
     },
-    "include": [
-      "src/**/*.ts"
-    ],
-    "exclude": [
-      "src/**/*.test.ts"
-    ]
-  }
+    "include": [ "./src" ],
+}

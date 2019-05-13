@@ -1,6 +1,4 @@
-const { ApiPromise, WsProvider } = require('@polkadot/api');
-const { Keyring, KeyringPair } = require('@polkadot/keyring');
-const { BlockNumber, Vector, AccountId, u32, Hash, Struct, Signature, Tuple, u128, Option } = require('@polkadot/types');
+const { BlockNumber, Vector, AccountId, u32, Hash, Signature, u128, Option } = require('@polkadot/types');
 const { TxIn, TxOut, Tx, SignedTx } = require('./index.types');
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { u8aConcat } from '@polkadot/util';
@@ -59,13 +57,13 @@ export async function genTransfer(api: any, signer: any, src: string, dest: stri
         return false
     }
     const txOut = new TxOut({
-      value: new (Tuple.with([u128]))([new u128(value)]),
+      value: new u128(value),
       keys: new Vector(AccountId, [new AccountId(dest)]),
       quorum: new u32(1)
     })
 
     const txOutOwn = new TxOut({
-        value: new(Tuple.with([u128]))([new u128(new_value.toString())]),
+        value: new u128(new_value.toString()),
         keys: new Vector(AccountId, [new AccountId(src)]),
         quorum: new u32(1)
       })
@@ -73,7 +71,7 @@ export async function genTransfer(api: any, signer: any, src: string, dest: stri
     const tx = new Tx({
       inputs: new Vector(TxIn, txInList),
       outputs: new Vector(TxOut, [txOut, txOutOwn]),
-      lock_time: new u128(0) 
+      lock_time: new BlockNumber(0) 
     })
   
     const txMessage = blake2AsU8a(tx.toU8a());
