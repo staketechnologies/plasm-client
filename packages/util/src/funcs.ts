@@ -37,7 +37,7 @@ export async function getUtxoList(api: any, user: string): Promise<[any, any, bi
     return retList;
 }
 
-export async function genTransfer(api: any, signer: any, src: string, dest: string, value: bigint, fee: bigint) {
+export async function genTransfer(api: any, signer: any, src: string, dest: string, value: number, fee: number) {
     var txInList = [];
     var sum: bigint = BigInt(0);
     for (var utxo of await getUtxoList(api, src)) {
@@ -51,7 +51,7 @@ export async function genTransfer(api: any, signer: any, src: string, dest: stri
             }))
     }
     
-    const new_value: bigint = sum - value;
+    const new_value: bigint = sum - BigInt(value);
     if (new_value < 0) {
         return false
     }
