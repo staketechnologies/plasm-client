@@ -9,11 +9,21 @@ async function getSender(owner) {
     message: 'What is tx sender name?',
     initial: owner
   });
-  answer = await prompt.run()
-  return answer
+  return await prompt.run()
 }
 
-exports.deposit = async function(api, owner) {
+async function selectUtxo(api, accountId) {
+  const utxoList = getUtxoList(api, accoundId);
+
+  const prompt = new Select({
+    name: 'utxo',
+    message: `Select ${owner}'s utxo`, 
+    choices: utxoList
+  })
+  return await prompt.run()
+}
+
+exports.deposit = async function(parent, owner) {
   owner = await getSender(owner);
 
   const prompt = new NumberPrompt({
@@ -27,12 +37,47 @@ exports.deposit = async function(api, owner) {
   const hash = await api.tx.parentMvp
     .deposit(value)
     .signAndSend(keyPair);
+
+  // child deposit
   console.error('Success deposited!: ', hash.toHex());
 }
 
-exports.exit = async function(api, owner) {
+exports.exit = async function(parent, owner) {
   owner = await getSender(owner);
+  //exit_start(origin, blk_num: T::BlockNumber, depth: u32, index: u64, proofs: Vec<T::Hash>, utxo: T::Utxo) -> Result {
+  // exit_start(origin, tx_hash: T::Hash, out_index: u32) 
+
+  // input:
+  // owner -> utxoList -> select
+  // exit!
+
   console.log('exit!!')
+}
+
+exports.exitFinalize = async function(api, owner) {
+  owner = await getSender(owner);
+  //exit_finalize(origin, exit_id: T::Hash)
+  // 
+  console.log('exit Finalize!!')
+}
+
+// getProof
+// owner -> utxoList -> select
+// get_proof(origin, blk_num: T::BlockNumber, tx_hash: T::Hash, out_index: u32) -> Result
+exports.getProof = async function(api, owner) {
+  owner = await getSender(owner);
+  console.log('exit Finalize!!')
+}
+
+// getExitStatusStorage
+exports.getExitInfo = async function(api, owner) {
+  owner = await getSender(owner);
+  const prompt = new Input({
+    message: 'What ExitId?'
+  })
+  const exitId = await prompt.run();
+  const exitInfo = await api.query.plasmParent.exitStatusStorage(new Hash(exitId))
+  console.log(exitInfo);
 }
 
 exports.transfer = async function(api, owner) {

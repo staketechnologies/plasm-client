@@ -1,5 +1,5 @@
 const { AutoComplete, Form } = require('enquirer');
-const {deposit, exit, transfer, setOwner, send, displayBalance, displayUtxo} =  require('./commands');
+const {deposit, exit, transfer, setOwner, send, displayBalance, displayUtxo, exitFinalize, getExitInfo, getProof} =  require('./commands');
 const { create } = require('@plasm/util')
 
 var default_p_endpoint = ''
@@ -39,6 +39,9 @@ async function main() {
         'transfer',
         'deposit',
         'exit',
+        'exitFinalize',
+        'getExitInfo',
+        'getProof',
         'send',
         'set_owner',
         'balance',
@@ -58,6 +61,15 @@ async function main() {
             break;
           case 'exit':
             await exit(parent, owner)
+            break;
+          case 'exitFinalize':
+            await exitFinalize(parent, owner);
+            break;
+          case 'getExitInfo':
+            await getExitInfo(parent, owner);
+            break;
+          case 'getProof':
+            await getProof(child, owner);
             break;
           case 'send':
             await send(parent, owner)
