@@ -1,6 +1,6 @@
 {
   "name": "@plasm/util",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Plasm front end API.",
   "main": "dest/index.js",
   "publishConfig": {
