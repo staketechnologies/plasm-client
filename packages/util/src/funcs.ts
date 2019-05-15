@@ -9,7 +9,7 @@ export async function getBalance(api: any, user: string ): Promise<number> {
     const utxoList = JSON.parse(utxoFinder);
 
     var sum = Number(0);
-    for (var utxo in utxoList) {
+    for (var utxo of utxoList) {
         const utxoTxHash = new Hash(utxo[0]);
         const utxoOutIndex = new u32(utxo[1]);
 
@@ -26,7 +26,7 @@ export async function getUtxoList(api: any, user: string): Promise<[any, any, nu
     const utxoList = JSON.parse(utxoFinder);
 
     var retList: [any, any, number][] = [];
-    for (var utxo in utxoList) {
+    for (var utxo of utxoList) {
         const utxoTxHash = new Hash(utxo[0]);
         const utxoOutIndex = new u32(utxo[1]);
 
@@ -41,7 +41,7 @@ export async function getUtxoList(api: any, user: string): Promise<[any, any, nu
 export async function genTransfer(api: any, signer: any, src: string, dest: string, value: number, fee: number) {
     var txInList: Class[] = [];
     var sum: number = Number(0);
-    for (var utxo in await getUtxoList(api, src)) {
+    for (var utxo of await getUtxoList(api, src)) {
         const utxoTxHash = utxo[0];
         const utxoOutIndex = utxo[1];
         sum += Number(utxo[2]);
