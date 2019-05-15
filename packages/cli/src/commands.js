@@ -1,4 +1,4 @@
-const { Input, NumberPrompt } = require('enquirer');
+const { Input, NumberPrompt, Select } = require('enquirer');
 const { KeyGenerator, genTransfer, getUtxoList, getBalance } = require('@plasm/util');
 
 async function getSender(owner) {
@@ -13,14 +13,16 @@ async function getSender(owner) {
 }
 
 async function selectUtxo(api, accountId) {
-  const utxoList = getUtxoList(api, accoundId);
+  const utxoList = await getUtxoList(api, accountId);
 
   const prompt = new Select({
     name: 'utxo',
-    message: `Select ${owner}'s utxo`, 
-    choices: utxoList
+    message: `Select ${accountId}'s utxo`, 
+    limit: 7,
+    choices: utxoList.map((v) => v.toString())
   })
-  return await prompt.run()
+  const utxoStr = await prompt.run();
+  return utxoList.filter((v) => v.toString() == utxoStr)[0]
 }
 
 exports.deposit = async function(parent, owner) {
@@ -61,11 +63,43 @@ exports.exitFinalize = async function(api, owner) {
   console.log('exit Finalize!!')
 }
 
+async function sleep(sec) {
+  return  new Promise(resolve => setTimeout(resolve, sec*1000))
+}
+
 // getProof
 // owner -> utxoList -> select
 // get_proof(origin, blk_num: T::BlockNumber, tx_hash: T::Hash, out_index: u32) -> Result
 exports.getProof = async function(api, owner) {
   owner = await getSender(owner);
+  keyPair = KeyGenerator.instance.from(owner);
+  utxo = await selectUtxo(api, keyPair.address())
+  const currentBlock = await api.query.child.currentBlock();
+  console.log(currentBlock)
+  await api.tx.childMvp
+    .getProof(currentBlock, utxo[0], utxo[1])
+    .signAndSend(keyPair);
+  for (var i =0; i < 10;i++) {
+    const events = await api.query.system.events();
+    console.log(`\nReceived ${events.length} events:`);
+
+    // loop through the Vec<EventRecord>
+    events.forEach((record) => {
+      // extract the phase, event and the event types
+      const { event, phase } = record;
+      const types = event.typeDef;
+
+      // show what we are busy with
+      console.log(`\t${event.section}:${event.method}:: (phase=${phase.toString()})`);
+      console.log(`\t\t${event.meta.documentation.toString()}`);
+
+      // loop through each of the parameters, displaying the type and data
+      event.data.forEach((data, index) => {
+        console.log(`\t\t\t${types[index].type}: ${data.toString()}`);
+      });
+    });
+    await sleep(1);
+  }
   console.log('exit Finalize!!')
 }
 
@@ -76,7 +110,7 @@ exports.getExitInfo = async function(api, owner) {
     message: 'What ExitId?'
   })
   const exitId = await prompt.run();
-  const exitInfo = await api.query.plasmParent.exitStatusStorage(new Hash(exitId))
+  const exitInfo = await api.query.parent.exitStatusStorage(new Hash(exitId))
   console.log(exitInfo);
 }
 
