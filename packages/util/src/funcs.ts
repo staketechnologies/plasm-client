@@ -51,7 +51,7 @@ export async function genTransfer(api: any, signer: any, src: string, dest: stri
             }))
     }
     
-    const new_value: bigint = sum - BigInt(value);
+    const new_value: bigint = sum - BigInt(value) - BigInt(fee);
     if (new_value < 0) {
         return false
     }

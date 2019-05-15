@@ -37,24 +37,25 @@ exports.exit = async function(api, owner) {
 
 exports.transfer = async function(api, owner) {
   owner = await getSender(owner);
-  console.log('transfer!!')
-
   const prompt = new Input({
       message: 'What name is transfer to?'
   })
   const dest = await prompt.run();
 
-  prompt = new NumberPrompt({
+  const prompt2 = new NumberPrompt({
       name: 'value',
-      message: 'deposit value'
+      message: 'transfer value'
     });
-  value = await prompt.run()
+  value = await prompt2.run()
 
   const keyPair = KeyGenerator.instance.from(owner);
-  const tx = genTransfer(api, keyPair, keyPair.address(), dest, value, 100);
-  const hash = await api.tx.utxoMvp
+  const destPair = KeyGenerator.instance.from(dest);
+  const tx = await genTransfer(api, keyPair, keyPair.address(), destPair.address(), value, 0);
+  console.log(tx)
+  const hash = await api.tx.childMvp
     .execute(tx)
     .signAndSend(keyPair);
+
   console.log('Success Tx!: ', hash.toHex())
 }
 
@@ -65,6 +66,27 @@ exports.setOwner = async function() {
     
   answer = await prompt.run()
   return answer
+}
+
+exports.send = async function(api, owner) {
+  owner = await getSender(owner);
+  const prompt = new Input({
+      message: 'What name is send to?'
+  })
+  const dest = await prompt.run();
+
+  const prompt2 = new NumberPrompt({
+      name: 'value',
+      message: 'send value'
+    });
+  value = await prompt2.run()
+
+  const keyPair = KeyGenerator.instance.from(owner);
+  const destPair = KeyGenerator.instance.from(dest);
+  const hash = await api.tx.balances
+    .transfer(destPair.address(), value)
+    .signAndSend(keyPair);
+  console.log('Success Send!: ', hash.toHex());
 }
 
 exports.displayBalance = async function(api, owner) {

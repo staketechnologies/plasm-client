@@ -1,5 +1,5 @@
 const { AutoComplete, Form } = require('enquirer');
-const {deposit, exit, transfer, setOwner, displayBalance, displayUtxo} =  require('./commands');
+const {deposit, exit, transfer, setOwner, send, displayBalance, displayUtxo} =  require('./commands');
 const { create } = require('@plasm/util')
 
 var default_p_endpoint = ''
@@ -39,9 +39,11 @@ async function main() {
         'transfer',
         'deposit',
         'exit',
+        'send',
         'set_owner',
         'balance',
-        'utxo'
+        'utxo',
+        'quit'
       ]
     });
     main_prompt.run()
@@ -57,6 +59,9 @@ async function main() {
           case 'exit':
             await exit(parent, owner)
             break;
+          case 'send':
+            await send(parent, owner)
+            break;
           case 'set_owner':
             owner = await setOwner()
             break;
@@ -65,14 +70,15 @@ async function main() {
             break;
           case 'utxo':
             await displayUtxo(child, owner)
-            break;  
+            break;
+          case 'quit':
+            throw 'quit!';
           default:
             console.log('unimplemented command.');
             break;
         }
         start(parent, child, owner)
       })
-      .catch(console.error);  
   }
 }
 
