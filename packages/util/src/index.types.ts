@@ -1,7 +1,7 @@
 
 // @ts-check
 // Import the API
-import { BlockNumber, Vector, AccountId, u32, Hash, Struct, Signature, U128, u128 } from '@polkadot/types';
+import { BlockNumber, Vector, AccountId, u32, Hash, Struct, Signature, U128, u128, Tuple, Moment, Enum } from '@polkadot/types';
 
 export class Value extends U128 {}
 
@@ -49,3 +49,34 @@ export class SignedTransaction extends Struct {
 }
 
 export class SignedTx extends SignedTransaction {}
+
+export class Utxo extends Tuple {
+	constructor (value: any) {
+        super({
+          Transaction, u32,
+        }, value);
+    }
+}
+
+export class ExitState extends Enum {
+	constructor (value?: any) {
+		super([
+		  'Exiting',
+		  'Challenging',
+		  'Challenged',
+		  'Finalized'
+		], value);
+	  }
+}
+
+export class ExitStatus extends Struct {
+	constructor (value?: any) {
+		super({
+			blkNum: BlockNumber,
+			utxo: Utxo,
+			started: Moment,
+			expired: Moment,
+			state: ExitState		
+		}, value)
+	}
+}

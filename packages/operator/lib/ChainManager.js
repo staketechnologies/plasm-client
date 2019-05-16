@@ -83,6 +83,14 @@ class ChainManager {
     async submitHandle() {
 
     }
+
+    async depositHandle() {
+      
+    }
+
+    async exitHandle() {
+
+    }
 }
 
 module.exports = ChainManager

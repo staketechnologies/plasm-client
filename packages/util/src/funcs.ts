@@ -83,3 +83,39 @@ export async function genTransfer(api: any, signer: any, src: string, dest: stri
     });
     return signedTx;
 }
+
+async function sleep(sec: number) {
+  return  new Promise(resolve => setTimeout(resolve, sec*1000))
+}
+
+async function eventCatch(api: any, section: string, method: string, retry: number) {
+  for (var i = 0; i < retry; i++ ) {
+    const events = await api.query.system.events()
+    // loop through the Vec<EventRecord>
+    for (const record of  events) {
+      // extract the phase, event and the event types
+      const { event, _ } = record;
+      // show what we are busy with
+      if (event.section == section && event.method == method) {
+        return event.data
+      }
+    }
+    await sleep(1);
+  }
+  return null;
+}
+
+export async function getProof(api: any, signer: any, utxo: any) {
+  const currentBlock = await api.query.child.currentBlock();
+  if (currentBlock) { } else {
+    console.log("unexits blocks...")
+    return;
+  }
+  console.log(currentBlock)
+  await api.tx.childMvp
+    .getProof(currentBlock, utxo[0], utxo[1])
+    .signAndSend(signer);
+  const proofs = await eventCatch(api, "childMvp", "Proof", 10);
+  console.log(proofs);
+  return proofs;
+}
