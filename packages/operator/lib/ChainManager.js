@@ -96,8 +96,8 @@ class ChainManager {
       types: this.typeList
     });
     
-    await this.parentHandle();
-    await this.childHandle();
+    this.parentHandle();
+    this.childHandle();
   }
 
   // eventData = [Hash, ]

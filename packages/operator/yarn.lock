@@ -10,9 +10,9 @@
     regenerator-runtime "^0.13.2"
 
 "@plasm/util@^0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@plasm/util/-/util-0.1.7.tgz#4adcc4aa3d0b6a7af5b051b838042dbea3353edd"
-  integrity sha512-ZxoIowhXfkPm9diLKEGYY1w+huA8JqrFfmXkQ2OthhTeJQxca3DXdNLUUZ3LAUGWEWvw9D1y6UCfOspQVVfafg==
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@plasm/util/-/util-0.1.8.tgz#d39bc9c1b018dd49e3c5d271ea9e8af9b9f8939b"
+  integrity sha512-wreJrep0ur5CSzbNwMPZEOYnbk0eb+9SUSvJEIDyndPWAaPExslmoIxXMk9n8mjWbZmzuuCTJ2U+FAOoYPmvTg==
   dependencies:
     "@polkadot/api" "^0.78.1"
 
