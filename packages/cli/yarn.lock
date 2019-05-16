@@ -10,9 +10,9 @@
     regenerator-runtime "^0.13.2"
 
 "@plasm/util@0.1":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@plasm/util/-/util-0.1.6.tgz#f0d79d18dac8262b958127c480e2e2dc9b9bca46"
-  integrity sha512-k0PBmnoGui8tkjhgBI8GgvpiF/OfwpAchx0H7MpUxCcUyWgSUgR2y4VJgQ4sHrv3xXRaLV83Dnp4ql0qXgHrLg==
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@plasm/util/-/util-0.1.8.tgz#d39bc9c1b018dd49e3c5d271ea9e8af9b9f8939b"
+  integrity sha512-wreJrep0ur5CSzbNwMPZEOYnbk0eb+9SUSvJEIDyndPWAaPExslmoIxXMk9n8mjWbZmzuuCTJ2U+FAOoYPmvTg==
   dependencies:
     "@polkadot/api" "^0.78.1"
 
@@ -884,9 +884,9 @@ regenerator-runtime@^0.13.2:
   integrity sha512-S/TQAZJO+D3m9xeN1WTI8dLKBBiRgXBlTJvbWjCThHWZj9EvHK70Ff50/tYj2J/fvBY6JtFVwRuazHN2E7M9BA==
 
 resolve@^1.1.6:
-  version "1.10.1"
-  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.10.1.tgz#664842ac960795bbe758221cdccda61fb64b5f18"
-  integrity sha512-KuIe4mf++td/eFb6wkaPbMDnP6kObCaEtIDuHOUED6MNUo4K670KZUHuuvYPZDxNF0WVLw49n06M2m2dXphEzA==
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.11.0.tgz#4014870ba296176b86343d50b60f3b50609ce232"
+  integrity sha512-WL2pBDjqT6pGUNSUzMw00o4T7If+z4H2x3Gz893WoUQ5KW8Vr9txp00ykiP16VBaZF5+j/OcXJHZ9+PCvdiDKw==
   dependencies:
     path-parse "^1.0.6"
 

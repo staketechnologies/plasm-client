@@ -1,5 +1,6 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { genTransfer, KeyGenerator } = require('@plasm/util');
+const { u32 } = require('@polkadot/types')
 const { blake2AsU8a } = require('@polkadot/util-crypto');
 const fs = require('fs');
 
@@ -17,7 +18,8 @@ class ChainManager {
     this.childEndpoint = child_endpoint;
 
     this.fee = 0;
-
+    
+    this.localNonce = 0;
     this.timer = null;
     this.parent = null;
     this.child = null;

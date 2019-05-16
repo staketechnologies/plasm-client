@@ -1,5 +1,5 @@
 const { Input, NumberPrompt, Select } = require('enquirer');
-const { KeyGenerator, genTransfer, getUtxoList, getBalance } = require('@plasm/util');
+const { KeyGenerator, genTransfer, getUtxoList, getBalance, getProof, getUnfinalizeExitIdList } = require('@plasm/util');
 
 async function getSender(owner) {
   if(owner) {} else {
@@ -25,7 +25,19 @@ async function selectUtxo(api, accountId) {
   return utxoList.filter((v) => v.toString() == utxoStr)[0]
 }
 
-exports.deposit = async function(parent, owner) {
+async function selectUnfinalizeExitId(api) {
+  const exitList = await getUnfinalizeExitIdList(accountId);
+  const prompt = new Select({
+    name: 'exit',
+    message: `Select unfinalize exits`, 
+    limit: 7,
+    choices: exitList.map((v) => v.toString())
+  })
+  const exitStr = await prompt.run();
+  return exitList.filter((v) => v.toString() == exitStr)[0]
+}
+
+exports.deposit = async function(api, owner) {
   owner = await getSender(owner);
 
   const prompt = new NumberPrompt({
@@ -41,26 +53,29 @@ exports.deposit = async function(parent, owner) {
     .signAndSend(keyPair);
 
   // child deposit
-  console.error('Success deposited!: ', hash.toHex());
+  console.log('Success deposited!: ', hash.toHex());
 }
 
-exports.exit = async function(parent, owner) {
+exports.exit = async function(parent, child, owner) {
   owner = await getSender(owner);
-  //exit_start(origin, blk_num: T::BlockNumber, depth: u32, index: u64, proofs: Vec<T::Hash>, utxo: T::Utxo) -> Result {
-  // exit_start(origin, tx_hash: T::Hash, out_index: u32) 
-
-  // input:
-  // owner -> utxoList -> select
-  // exit!
-
-  console.log('exit!!')
+  const keyPair = KeyGenerator.instance.from(owner);
+  const utxo = await selectUtxo(child, keyPair.address())
+  const proofs = await getProof(child, keyPair, utxo);
+  const eUtxo = genUtxo(child, utxo);
+  const hash = await parent.tx.parentMvp
+    .exitStart(proofs[0], proofs[1], proofs[2], proofs[3], eUtxo)
+    .signAndSend(keyPair);
+  console.log('Success exitStart!: ', hash.toHex());
 }
 
 exports.exitFinalize = async function(api, owner) {
   owner = await getSender(owner);
-  //exit_finalize(origin, exit_id: T::Hash)
-  // 
-  console.log('exit Finalize!!')
+  const keyPair = KeyGenerator.instance.from(owner);
+  const exitId = await selectUnfinalizeExitId(parent);
+  const hash = await api.tx.parentMvp
+    .exit_finalize(exitId)
+    .signAndSend(keyPair);
+  console.log('Success exit Finalize!!: ', hash.toHex())
 }
 
 async function sleep(sec) {
@@ -71,47 +86,20 @@ async function sleep(sec) {
 // owner -> utxoList -> select
 // get_proof(origin, blk_num: T::BlockNumber, tx_hash: T::Hash, out_index: u32) -> Result
 exports.getProof = async function(api, owner) {
+  console.log('getProof!')
   owner = await getSender(owner);
-  keyPair = KeyGenerator.instance.from(owner);
-  utxo = await selectUtxo(api, keyPair.address())
-  const currentBlock = await api.query.child.currentBlock();
-  console.log(currentBlock)
-  await api.tx.childMvp
-    .getProof(currentBlock, utxo[0], utxo[1])
-    .signAndSend(keyPair);
-  for (var i =0; i < 10;i++) {
-    const events = await api.query.system.events();
-    console.log(`\nReceived ${events.length} events:`);
-
-    // loop through the Vec<EventRecord>
-    events.forEach((record) => {
-      // extract the phase, event and the event types
-      const { event, phase } = record;
-      const types = event.typeDef;
-
-      // show what we are busy with
-      console.log(`\t${event.section}:${event.method}:: (phase=${phase.toString()})`);
-      console.log(`\t\t${event.meta.documentation.toString()}`);
-
-      // loop through each of the parameters, displaying the type and data
-      event.data.forEach((data, index) => {
-        console.log(`\t\t\t${types[index].type}: ${data.toString()}`);
-      });
-    });
-    await sleep(1);
-  }
-  console.log('exit Finalize!!')
+  const keyPair = KeyGenerator.instance.from(owner);
+  const utxo = await selectUtxo(api, keyPair.address())
+  const proofs = await getProof(api, keyPair, utxo);
+  console.log('getProof: ', proofs);
 }
 
 // getExitStatusStorage
 exports.getExitInfo = async function(api, owner) {
   owner = await getSender(owner);
-  const prompt = new Input({
-    message: 'What ExitId?'
-  })
-  const exitId = await prompt.run();
+  const exitId = selectUnfinalizeExitId(api)
   const exitInfo = await api.query.parent.exitStatusStorage(new Hash(exitId))
-  console.log(exitInfo);
+  console.log('exitInfo: ', exitInfo);
 }
 
 exports.transfer = async function(api, owner) {

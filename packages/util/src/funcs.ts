@@ -1,7 +1,8 @@
 const { BlockNumber, Vector, AccountId, u32, Hash, Signature, u128 } = require('@polkadot/types');
-const { TxIn, TxOut, Tx, SignedTx } = require('./index.types');
+const { TxIn, TxOut, Tx, SignedTx, Transaction } = require('./index.types');
 import { blake2AsU8a } from '@polkadot/util-crypto';
 import { u8aConcat } from '@polkadot/util';
+import { Tuple } from '@polkadot/types';
 
 export async function getBalance(api: any, user: string ): Promise<BigInt> {
     const utxoFinder = await api.query.utxo.unspentOutputsFinder(new AccountId(user));
@@ -119,4 +120,13 @@ export async function getProof(api: any, signer: any, utxo: any) {
   const proofs = await eventCatch(api, "childMvp", "Proof", 10);
   console.log(proofs);
   return proofs;
+}
+
+export async function genUtxo(api: any, utxo: any) {
+  const tx = api.query.txList(utxo[0]);
+  return new (Tuple.with([Transaction, u32]))([tx, utxo[1]])
+}
+
+export async function getUnfinalizeExitIdList(api: any) {
+  // TODO
 }
