@@ -22,7 +22,8 @@
   },
   "homepage": "https://github.com/stakedtechnologies/plasm-client#readme",
   "dependencies": {
-    "@polkadot/api": "^0.77.1",
+    "@plasm/util": "^0.1.7",
+    "@polkadot/api": "^0.78.1",
     "dotenv": "^8.0.0"
   }
 }

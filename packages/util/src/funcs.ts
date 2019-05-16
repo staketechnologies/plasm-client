@@ -84,7 +84,7 @@ export async function genTransfer(api: any, signer: any, src: string, dest: stri
     return signedTx;
 }
 
-async function sleep(sec: number) {
+export async function sleep(sec: number) {
   return  new Promise(resolve => setTimeout(resolve, sec*1000))
 }
 

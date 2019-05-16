@@ -2,13 +2,13 @@
   "name": "@plasm/util",
   "version": "0.1.7",
   "description": "Plasm front end API.",
-  "main": "dest/index.js",
+  "main": "dest/src/index.js",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "build": "tsc --build ./tsconfig.json",
-    "test": "mocha ./test/*.test.ts --timeout 10000"
+    "test": "mocha ./dest/test/*.test.js --timeout 10000"
   },
   "repository": {
     "type": "git",
