@@ -88,13 +88,13 @@ async function sleep(sec: number) {
   return  new Promise(resolve => setTimeout(resolve, sec*1000))
 }
 
-async function eventCatch(api: any, section: string, method: string, retry: number) {
+export async function eventCatch(api: any, section: string, method: string, retry: number) {
   for (var i = 0; i < retry; i++ ) {
     const events = await api.query.system.events()
     // loop through the Vec<EventRecord>
     for (const record of  events) {
       // extract the phase, event and the event types
-      const { event, _ } = record;
+      const { event,  } = record;
       // show what we are busy with
       if (event.section == section && event.method == method) {
         return event.data
@@ -105,6 +105,7 @@ async function eventCatch(api: any, section: string, method: string, retry: numb
   return null;
 }
 
+// return [blocknumber, tx_hash, out_index, proofs, depth, index]
 export async function getProof(api: any, signer: any, utxo: any) {
   const currentBlock = await api.query.child.currentBlock();
   if (currentBlock) { } else {

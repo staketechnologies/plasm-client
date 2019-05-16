@@ -16,7 +16,10 @@ export async function create(endpoint: string){
             TxIn: types.TxIn,
             TxOut: types.TxOut,
             Tx: types.Tx,
-            SignedTx: types.SignedTx
+            SignedTx: types.SignedTx,
+            Utxo: types.Utxo,
+            ExitState: types.ExitState,
+            ExitStatus: types.ExitStatus
         }
     });
 }

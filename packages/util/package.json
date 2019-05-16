@@ -7,7 +7,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc --build ./tsconfig.json"
+    "build": "tsc --build ./tsconfig.json",
+    "test": "mocha ./test/*.test.ts --timeout 10000"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
+    "chai": "^4.2.0",
     "typescript": "^3.4.5"
   }
 }
