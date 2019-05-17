@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Plasm node operator.",
   "main": "lib/entry.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node -r dotenv/config ./lib/entry"

@@ -1,8 +1,11 @@
 {
-  "name": "cli",
+  "name": "@plasm/cli",
   "version": "0.1.0",
   "description": "Plasm CLI.",
   "main": "lib/entry.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "cli": "node -r dotenv/config ./src/index.js"
   },
