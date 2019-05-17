@@ -123,10 +123,10 @@ export async function getProof(api: any, signer: any, utxo: any) {
 }
 
 export async function genUtxo(api: any, utxo: any) {
-  const tx = api.query.txList(utxo[0]);
+  const tx = await api.query.txList(utxo[0]);
   return new (Tuple.with([Transaction, u32]))([tx, utxo[1]])
 }
 
 export async function getUnfinalizeExitIdList(api: any) {
-  // TODO
+  return await api.query.unfinalizedExits();
 }
