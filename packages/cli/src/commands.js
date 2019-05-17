@@ -14,7 +14,9 @@ async function getSender(owner) {
 
 async function selectUtxo(api, accountId) {
   const utxoList = await getUtxoList(api, accountId);
-
+  if (utxoList.length == 0) {
+    return null
+  }
   const prompt = new Select({
     name: 'utxo',
     message: `Select ${accountId}'s utxo`, 
@@ -27,6 +29,9 @@ async function selectUtxo(api, accountId) {
 
 async function selectUnfinalizeExitId(api) {
   const exitList = await getUnfinalizeExitIdList(api);
+  if (exitList.length == 0) {
+    return null
+  }
   const prompt = new Select({
     name: 'exit',
     message: `Select unfinalize exits`, 
@@ -60,6 +65,10 @@ exports.exit = async function(parent, child, owner) {
   owner = await getSender(owner);
   const keyPair = KeyGenerator.instance.from(owner);
   const utxo = await selectUtxo(child, keyPair.address())
+  if (!utxo) {
+    console.log('Empty utxo.')
+    return;
+  }
   //blocknumber, tx_hash, out_index, proofs, depth, index
   const proofs = await getProof(child, keyPair, utxo);
   const eUtxo = await genUtxo(child, utxo);
@@ -74,6 +83,10 @@ exports.exitFinalize = async function(api, owner) {
   owner = await getSender(owner);
   const keyPair = KeyGenerator.instance.from(owner);
   const exitId = await selectUnfinalizeExitId(parent);
+  if (!exitId) {
+    console.log('Empty exitId');
+    return;
+  }
   const hash = await api.tx.parentMvp
     .exitFinalize(exitId)
     .signAndSend(keyPair);
@@ -88,6 +101,10 @@ exports.getProof = async function(api, owner) {
   owner = await getSender(owner);
   const keyPair = KeyGenerator.instance.from(owner);
   const utxo = await selectUtxo(api, keyPair.address())
+  if (!utxo) {
+    console.log('Empty utxo.')
+    return;
+  }
   const proofs = await getProof(api, keyPair, utxo);
   console.log('getProof: ', proofs);
 }
@@ -95,6 +112,10 @@ exports.getProof = async function(api, owner) {
 // getExitStatusStorage
 exports.getExitInfo = async function(api) {
   const exitId = await selectUnfinalizeExitId(api)
+  if (!exitId) {
+    console.log('Empty exitId');
+    return;
+  }
   const exitInfo = await api.query.parent.exitStatusStorage(exitId)
   console.log('exitInfo: ', exitInfo);
 }

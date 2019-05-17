@@ -1,5 +1,4 @@
-const { ApiPromise, WsProvider } = require('@polkadot/api');
-const { genTransfer, KeyGenerator } = require('@plasm/util');
+const { genTransfer, KeyGenerator, create } = require('@plasm/util');
 const { Hash } = require('@polkadot/types')
 const { blake2AsU8a } = require('@polkadot/util-crypto');
 const fs = require('fs');
@@ -18,7 +17,7 @@ class ChainManager {
     this.childEndpoint = child_endpoint;
 
     this.fee = 0;
-    
+
     this.localNonce = 0;
     this.timer = null;
     this.parent = null;
@@ -28,7 +27,7 @@ class ChainManager {
   async parentHandle() {
     this.parent.query.system.events((events) => {
       console.log(white + `\nParentReceived ${events.length} events:`);
-  
+
       // loop through the Vec<EventRecord>
       events.forEach((record) => {
         // extract the phase, event and the event types
@@ -80,23 +79,19 @@ class ChainManager {
             console.log(white + `\t\t\t${types[index].type}: ${data.toString()}`);
           });
 
-          if (event.method == "Submit") {
-            this.submitHandle(event.data)
+          switch (event.method) {
+            case "Submit":
+              this.submitHandle(event.data)
+              break;
           }
         }
       });
     });
   }
-  
+
   async start() {
-    this.parent = await ApiPromise.create({
-      provider: new WsProvider(this.parentEndpoint),
-      types: this.typeList
-    });
-    this.child = await ApiPromise.create({
-      provider: new WsProvider(this.childEndpoint),
-      types: this.typeList
-    });
+    this.parent = await create(this.parentEndpoint);
+    this.child = await create(this.childEndpoint);
     
     this.parentHandle();
     this.childHandle();
