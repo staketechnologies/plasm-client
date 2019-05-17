@@ -1,6 +1,6 @@
 {
   "name": "@plasm/cli",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Plasm CLI.",
   "main": "lib/entry.js",
   "publishConfig": {
