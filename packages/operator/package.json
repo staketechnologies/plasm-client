@@ -1,6 +1,6 @@
 {
   "name": "@plasm/operator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Plasm node operator.",
   "main": "lib/entry.js",
   "publishConfig": {
