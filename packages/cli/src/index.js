@@ -60,13 +60,13 @@ async function main() {
             await deposit(parent, owner)
             break;
           case 'exit':
-            await exit(parent, owner)
+            await exit(parent, child, owner)
             break;
           case 'exitFinalize':
             await exitFinalize(parent, owner);
             break;
           case 'getExitInfo':
-            await getExitInfo(parent, owner);
+            await getExitInfo(parent);
             break;
           case 'getProof':
             await getProof(child, owner);

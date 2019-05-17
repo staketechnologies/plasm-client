@@ -1,6 +1,6 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { genTransfer, KeyGenerator } = require('@plasm/util');
-const { u32 } = require('@polkadot/types')
+const { Hash } = require('@polkadot/types')
 const { blake2AsU8a } = require('@polkadot/util-crypto');
 const fs = require('fs');
 
@@ -134,10 +134,12 @@ class ChainManager {
     const exitId = eventData[1];
     const exitInfo = await this.parent.query.parent.exitStatusStorage(exitId);
     console.log(exitInfo);
-    const tx = exitInfo.get('utxo')[0];
-    const txHash = blake2AsU8a(tx.toU8a())
-    const outIndex = exitInfo.get('utxo')[1];
-    const hash = await this.child.tx.childMvp.exitStart(new Hash(txHash), outIndex).signAndSend(this.operator);
+    const tx = exitInfo.unwrap().get('utxo')[0];
+    const txHash = new Hash(blake2AsU8a(tx.toU8a()))
+    const outIndex = exitInfo.unwrap().get('utxo')[1];
+    console.log('txHash: ', txHash);
+    console.log('outIndex: ', outIndex);
+    const hash = await this.child.tx.childMvp.exitStart(txHash, outIndex).signAndSend(this.operator);
     console.log("Success exitHandle!: ", hash.toHex());
   }
 }

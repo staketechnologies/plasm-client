@@ -1,5 +1,5 @@
 const { Input, NumberPrompt, Select } = require('enquirer');
-const { KeyGenerator, genTransfer, getUtxoList, getBalance, getProof, getUnfinalizeExitIdList } = require('@plasm/util');
+const { KeyGenerator, genTransfer, getUtxoList, getBalance, getProof, getUnfinalizeExitIdList, genUtxo } = require('@plasm/util');
 
 async function getSender(owner) {
   if(owner) {} else {
@@ -26,7 +26,7 @@ async function selectUtxo(api, accountId) {
 }
 
 async function selectUnfinalizeExitId(api) {
-  const exitList = await getUnfinalizeExitIdList(accountId);
+  const exitList = await getUnfinalizeExitIdList(api);
   const prompt = new Select({
     name: 'exit',
     message: `Select unfinalize exits`, 
@@ -60,10 +60,12 @@ exports.exit = async function(parent, child, owner) {
   owner = await getSender(owner);
   const keyPair = KeyGenerator.instance.from(owner);
   const utxo = await selectUtxo(child, keyPair.address())
+  //blocknumber, tx_hash, out_index, proofs, depth, index
   const proofs = await getProof(child, keyPair, utxo);
-  const eUtxo = genUtxo(child, utxo);
+  const eUtxo = await genUtxo(child, utxo);
+  //blk_num: T::BlockNumber, depth: u32, index: u64, proofs: Vec<T::Hash>, utxo: T::Utxo
   const hash = await parent.tx.parentMvp
-    .exitStart(proofs[0], proofs[1], proofs[2], proofs[3], eUtxo)
+    .exitStart(proofs[0], proofs[4], proofs[5], proofs[3], eUtxo)
     .signAndSend(keyPair);
   console.log('Success exitStart!: ', hash.toHex());
 }
@@ -73,13 +75,9 @@ exports.exitFinalize = async function(api, owner) {
   const keyPair = KeyGenerator.instance.from(owner);
   const exitId = await selectUnfinalizeExitId(parent);
   const hash = await api.tx.parentMvp
-    .exit_finalize(exitId)
+    .exitFinalize(exitId)
     .signAndSend(keyPair);
   console.log('Success exit Finalize!!: ', hash.toHex())
-}
-
-async function sleep(sec) {
-  return  new Promise(resolve => setTimeout(resolve, sec*1000))
 }
 
 // getProof
@@ -95,10 +93,9 @@ exports.getProof = async function(api, owner) {
 }
 
 // getExitStatusStorage
-exports.getExitInfo = async function(api, owner) {
-  owner = await getSender(owner);
-  const exitId = selectUnfinalizeExitId(api)
-  const exitInfo = await api.query.parent.exitStatusStorage(new Hash(exitId))
+exports.getExitInfo = async function(api) {
+  const exitId = await selectUnfinalizeExitId(api)
+  const exitInfo = await api.query.parent.exitStatusStorage(exitId)
   console.log('exitInfo: ', exitInfo);
 }
 
