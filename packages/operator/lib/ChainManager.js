@@ -10,8 +10,7 @@ const white   = '\u001b[37m';
 const yellow  = '\u001b[33m';
 
 class ChainManager {
-  constructor(types_path, operator_uri, parent_endpoint, child_endpoint) {
-    this.typeList = JSON.parse(fs.readFileSync(types_path));
+  constructor(operator_uri, parent_endpoint, child_endpoint) {
     this.operator = KeyGenerator.instance.from(operator_uri);
     this.parentEndpoint = parent_endpoint;
     this.childEndpoint = child_endpoint;

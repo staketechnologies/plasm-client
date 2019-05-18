@@ -8,7 +8,6 @@ async function main() {
   await waitReady();
 
   const chainManager = new ChainManager(
-    process.env.TYPES_PATH,
     process.env.OPERATOR_URI,
     process.env.PARENT_END_POINT,
     process.env.CHILD_END_POINT
