@@ -18,6 +18,7 @@ import { WalletList, SecretItem } from './WalletList';
 import { AddressBookList } from './AddressBookList';
 import { TransformBondButton } from './TransformBondButton';
 import { Pretty } from './Pretty';
+import { ChildPretty } from './ChildPretty';
 
 export class App extends ReactiveComponent {
 	constructor() {
@@ -43,11 +44,12 @@ export class App extends ReactiveComponent {
 			<Divider hidden />
 			<FundingSegment />
 			<Divider hidden />
-			<UpgradeSegment />
+			<TransferSegment />
 			<Divider hidden />
-			<PokeSegment />
+			<DepositSegment />
 			<Divider hidden />
-			<TransactionsSegment />
+			<ExitSegment />
+			<Divider hidden />		
 		</div>);
 	}
 }
@@ -215,8 +217,8 @@ class FundingSegment extends React.Component {
 			<Header as='h2'>
 				<Icon name='send' />
 				<Header.Content>
-					Send Funds
-					<Header.Subheader>Send funds from your account to another</Header.Subheader>
+					Send Funds @ ParentWallet
+					<Header.Subheader>Send funds from your account to another At ParentChain</Header.Subheader>
 				</Header.Content>
 			</Header>
 			<div style={{ paddingBottom: '1em' }}>
@@ -264,99 +266,106 @@ class FundingSegment extends React.Component {
 	}
 }
 
-class UpgradeSegment extends React.Component {
+class TransferSegment extends React.Component {
 	constructor() {
 		super()
-		this.conditionBond = runtime.metadata.map(m =>
-			m.modules && m.modules.some(o => o.name === 'sudo')
-			|| m.modules.some(o => o.name === 'upgrade_key')
-		)
-		this.runtime = new Bond
+
+		this.source = new Bond;
+		this.amount = new Bond;
+		this.destination = new Bond;
 	}
 	render() {
-		return <If condition={this.conditionBond} then={
-			<Segment style={{ margin: '1em' }} padded>
-				<Header as='h2'>
-					<Icon name='search' />
-					<Header.Content>
-						Runtime Upgrade
-						<Header.Subheader>Upgrade the runtime using the UpgradeKey module</Header.Subheader>
-					</Header.Content>
-				</Header>
-				<div style={{ paddingBottom: '1em' }}></div>
-				<FileUploadBond bond={this.runtime} content='Select Runtime' />
-				<TransactButton
-					content="Upgrade"
-					icon='warning'
-					tx={{
-						sender: runtime.sudo
-							? runtime.sudo.key
-							: runtime.upgrade_key.key,
-						call: calls.sudo
-							? calls.sudo.sudo(calls.consensus.setCode(this.runtime))
-							: calls.upgrade_key.upgrade(this.runtime)
-					}}
-				/>
-			</Segment>
-		} />
-	}
-}
-
-class PokeSegment extends React.Component {
-	constructor () {
-		super()
-		this.storageKey = new Bond;
-		this.storageValue = new Bond;
-	}
-	render () {
-		return <If condition={runtime.metadata.map(m => m.modules && m.modules.some(o => o.name === 'sudo'))} then={
-			<Segment style={{margin: '1em'}} padded>
-				<Header as='h2'>
-					<Icon name='search' />
-					<Header.Content>
-						Poke
-						<Header.Subheader>Set a particular key of storage to a particular value</Header.Subheader>
-					</Header.Content>
-				</Header>
-				<div style={{paddingBottom: '1em'}}></div>
-				<InputBond bond={this.storageKey} placeholder='Storage key e.g. 0xf00baa' />
-				<InputBond bond={this.storageValue} placeholder='Storage value e.g. 0xf00baa' />
-				<TransactButton
-					content="Poke"
-					icon='warning'
-					tx={{
-						sender: runtime.sudo ? runtime.sudo.key : null,
-						call: calls.sudo ? calls.sudo.sudo(calls.consensus.setStorage([[this.storageKey.map(hexToBytes), this.storageValue.map(hexToBytes)]])) : null
-					}}
-				/>
-			</Segment>
-		}/>		
-	}
-}
-
-class TransactionsSegment extends React.Component {
-	constructor () {
-		super()
-
-		this.txhex = new Bond
-	}
-
-	render () {
-		return <Segment style={{margin: '1em'}} padded>
+		return <Segment style={{ margin: '1em' }} padded>
 			<Header as='h2'>
-				<Icon name='certificate' />
+				<Icon name='send' />
 				<Header.Content>
-					Transactions
-					<Header.Subheader>Send custom transactions</Header.Subheader>
+					Send Funds @ ChildWallet
+					<Header.Subheader>Send funds from your account to another At ChildChain</Header.Subheader>
 				</Header.Content>
 			</Header>
-			<div style={{paddingBottom: '1em'}}>
-				<div style={{paddingBottom: '1em'}}>
-					<div style={{fontSize: 'small'}}>Custom Transaction Data</div>
-					<InputBond bond={this.txhex}/>
-				</div>
-				<TransactButton tx={this.txhex.map(hexToBytes)} content="Publish" icon="sign in" />
+			<div style={{ paddingBottom: '1em' }}>
+				<div style={{ fontSize: 'small' }}>from</div>
+				<SignerBond bond={this.source} />
+				<If condition={this.source.ready()} then={<span>
+					<Label>Balance
+						<Label.Detail>
+							<ChildPretty src={this.source} />
+						</Label.Detail>
+					</Label>
+					<Label>Nonce
+						<Label.Detail>
+							<Pretty value={runtime.system.accountNonce(this.source)} />
+						</Label.Detail>
+					</Label>
+				</span>} />
 			</div>
+			<div style={{ paddingBottom: '1em' }}>
+				<div style={{ fontSize: 'small' }}>to</div>
+				<AccountIdBond bond={this.destination} />
+				<If condition={this.destination.ready()} then={
+					<Label>Balance
+						<Label.Detail>
+							<Pretty value={runtime.balances.balance(this.destination)} />
+						</Label.Detail>
+					</Label>
+				} />
+			</div>
+			<div style={{ paddingBottom: '1em' }}>
+				<div style={{ fontSize: 'small' }}>amount</div>
+				<BalanceBond bond={this.amount} />
+			</div>
+			<TransactButton
+				content="Send"
+				icon='send'
+				tx={{
+					sender: runtime.indices.tryIndex(this.source),
+					call: calls.balances.transfer(runtime.indices.tryIndex(this.destination), this.amount),
+					compact: false,
+					longevity: true
+				}}
+			/>
+		</Segment>
+	}
+}
+
+class DepositSegment extends React.Component {
+	constructor() {
+		super()
+
+		this.source = new Bond;
+		this.amount = new Bond;
+		this.destination = new Bond;
+	}
+	render() {
+		return <Segment style={{ margin: '1em' }} padded>
+			<Header as='h2'>
+				<Icon name='send' />
+				<Header.Content>
+					Deposit Child Wallet from Parent Wallet.
+					<Header.Subheader>Send funds from your account to another</Header.Subheader>
+				</Header.Content>
+			</Header>
+		</Segment>
+	}
+}
+
+class ExitSegment extends React.Component {
+	constructor() {
+		super()
+
+		this.source = new Bond;
+		this.amount = new Bond;
+		this.destination = new Bond;
+	}
+	render() {
+		return <Segment style={{ margin: '1em' }} padded>
+			<Header as='h2'>
+				<Icon name='send' />
+				<Header.Content>
+					Exit Child Wallet to Parent Wallet.
+					<Header.Subheader>Send funds from your account to another</Header.Subheader>
+				</Header.Content>
+			</Header>
 		</Segment>
 	}
 }
