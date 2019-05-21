@@ -19,6 +19,7 @@ import { AddressBookList } from './AddressBookList';
 import { TransformBondButton } from './TransformBondButton';
 import { Pretty } from './Pretty';
 import { ChildPretty } from './ChildPretty';
+import { genTransfer, create } from '@plasm/util';
 
 export class App extends ReactiveComponent {
 	constructor() {
@@ -270,9 +271,21 @@ class TransferSegment extends React.Component {
 	constructor() {
 		super()
 
+		this.state = {transfer: null}
+
 		this.source = new Bond;
 		this.amount = new Bond;
 		this.destination = new Bond;
+		this.transfer = new Bond;
+		this.genTx = Bond.all([this.source, this.destination, this.amount])
+		
+		create('ws://127.0.0.1:9944').then((api) => {
+			this.genTx.tie(([source, dest, amount]) => {
+				console.log('genTx: ', source, dest, amount)
+				genTransfer(api, singer, source, dest, amount, 0)
+					.then((tx) => this.transfer.changed(tx)); // /signer をどっかから取得
+			})
+		});
 	}
 	render() {
 		return <Segment style={{ margin: '1em' }} padded>
@@ -305,7 +318,7 @@ class TransferSegment extends React.Component {
 				<If condition={this.destination.ready()} then={
 					<Label>Balance
 						<Label.Detail>
-							<Pretty value={runtime.balances.balance(this.destination)} />
+							<ChildPretty src={this.destination} />
 						</Label.Detail>
 					</Label>
 				} />
@@ -319,7 +332,7 @@ class TransferSegment extends React.Component {
 				icon='send'
 				tx={{
 					sender: runtime.indices.tryIndex(this.source),
-					call: calls.balances.transfer(runtime.indices.tryIndex(this.destination), this.amount),
+					call: calls.utxoMvp.execute(this.transfer),
 					compact: false,
 					longevity: true
 				}}

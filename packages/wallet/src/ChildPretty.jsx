@@ -9,7 +9,7 @@ export class ChildPretty extends React.Component {
         super(props)
         this.state = {
             value: 0,
-        }        
+        }
     }
 
     componentDidMount() {
