@@ -53,6 +53,8 @@ export class App extends ReactiveComponent {
 			<Divider hidden />
 			<ExitSegment />
 			<Divider hidden />		
+			<ExitFinalizeSegment />
+			<Divider hidden />		
 		</div>);
 	}
 }
@@ -299,7 +301,6 @@ class TransferSegment extends React.Component {
 		create('ws://127.0.0.1:9944').then((api) => {
 			this.genTx.tie(([source, dest, amount]) => {
 				let signer = KeyGenerator.instance.from(secretStore().find(source).uri.slice(2));
-				console.log('genTx: ',signer,  source, dest, amount)
 				genTransfer(api, signer, source, dest, Number(amount), 0)
 					.then((tx) => this.transfer.changed(tx.toU8a()));
 			})
@@ -468,7 +469,58 @@ class ExitSegment extends React.Component {
 				</span>} />
 			</div>
 			<div style={{ paddingBottom: '1em' }}>
-				<UtxoList utxoList={this.utxoList} />
+				<UtxoList utxoList={this.utxoList} src={this.source} />
+			</div>
+
+		</Segment>
+	}
+}
+
+class ExitFinalizeSegment extends React.Component {
+	constructor() {
+		super()
+
+		this.source = new Bond;
+		this.utxoList = new Bond;
+		create('ws://127.0.0.1:9944').then((api) => {
+			this.source.tie((source) => {
+				getUtxoList(api, source)
+					.then((ret) => this.utxoList.changed(ret.map(([a,b,c]) => [a,b,c.toString()])));
+			})
+		});
+	}
+	render() {
+		return <Segment style={{ margin: '1em' }} padded>
+			<Header as='h2'>
+				<Icon name='send' />
+				<Header.Content>
+					Exit Child Wallet to Parent Wallet.
+					<Header.Subheader>Send funds from your account to another</Header.Subheader>
+				</Header.Content>
+			</Header>
+			<div style={{ paddingBottom: '1em' }}>
+				<div style={{ fontSize: 'small' }}>from</div>
+				<SignerBond bond={this.source} />
+				<If condition={this.source.ready()} then={<span>
+					<Label>Parent Balance
+						<Label.Detail>
+							<Pretty value={runtime.balances.balance(this.source)} />
+						</Label.Detail>
+					</Label>
+					<Label>Child Balance
+						<Label.Detail>
+							<ChildPretty src={this.source} />
+						</Label.Detail>
+					</Label>
+					<Label>Nonce
+						<Label.Detail>
+							<Pretty value={runtime.system.accountNonce(this.source)} />
+						</Label.Detail>
+					</Label>
+				</span>} />
+			</div>
+			<div style={{ paddingBottom: '1em' }}>
+				<UtxoList utxoList={this.utxoList} src={this.source} />
 			</div>
 
 		</Segment>

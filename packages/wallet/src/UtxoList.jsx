@@ -3,6 +3,8 @@ import {List, Icon, Button, Label, Popup} from 'semantic-ui-react';
 import {ReactiveComponent} from 'oo7-react';
 import {runtime, secretStore} from 'oo7-substrate';
 import Identicon from 'polkadot-identicon';
+import { create, KeyGenerator, getProof, genUtxo } from '@plasm/util';
+
 
 export class SecretItem extends ReactiveComponent {
 	constructor () {
@@ -41,15 +43,32 @@ export class SecretItem extends ReactiveComponent {
 
 export class UtxoList extends ReactiveComponent {
 	constructor () {
-		super(["utxoList"])
-	}
+		super(["src", "utxoList"])
+    }
+    
+    handleExit(src, txHash, outIndex) {
+		create('ws://127.0.0.1:9944').then((api) => {
+            let signer = KeyGenerator.instance.from(secretStore().find(src).uri.slice(2));
+            console.log('handleExit: ', signer, txHash, outIndex);
+            getProof(api, signer, [txHash, outIndex])
+                .then((proofs) => {
+                    genUtxo(api, [txHash, outIndex])
+                        .then((eUtxo) => {
+                            console.log('exit!: ', proofs[0], proofs[4], proofs[5], proofs[3], eUtxo);
+                            api.tx.parentMvp
+                                .exitStart(proofs[0], proofs[4], proofs[5], proofs[3], eUtxo)
+                                .signAndSend(signer);
+                        })
+                })
+			});
+    }
 
 	readyRender () {
 		return <List divided verticalAlign='bottom' style={{padding: '0 0 4px 4px', overflow: 'auto', maxHeight: '20em'}}>{
             this.state.utxoList.map(([txHash,outIndex,balance]) =>
 				<List.Item key={txHash}>
 					<List.Content floated='right'>
-						<Button size='small' onClick={() => console.log('Exit!')}>Exit</Button>
+						<Button size='small' onClick={() => this.handleExit(this.state.src, txHash, outIndex)}>Exit</Button>
 					</List.Content>
 					<List.Content>
                         <List.Content floated='left'>
