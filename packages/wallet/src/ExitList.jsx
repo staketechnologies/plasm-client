@@ -3,11 +3,14 @@ import {List, Icon, Button, Label, Popup} from 'semantic-ui-react';
 import {ReactiveComponent} from 'oo7-react';
 import {runtime, secretStore} from 'oo7-substrate';
 import Identicon from 'polkadot-identicon';
-import { create, KeyGenerator, getProof, genExit } from '@plasm/util';
+import {TransactionProgressLabel, styleStatus} from './TransactionProgressLabel';
+import {create, KeyGenerator, getProof, genExit} from '@plasm/util';
 
 export class ExitList extends ReactiveComponent {
 	constructor () {
-		super(["src", "exitList"])
+		super(["src", "exitList"], {
+            status: null
+        })
     }
     
     handleExitFinalize(src, exitId) {
@@ -15,7 +18,19 @@ export class ExitList extends ReactiveComponent {
             let signer = KeyGenerator.instance.from(secretStore().find(src).uri.slice(2));
             api.tx.parentMvp
                 .exitFinalize(exitId)
-                .signAndSend(signer);
+                .signAndSend(signer, ({ events = [], status }) => {
+                    console.log('Transaction status:', status.type);
+                    this.setState({status: status.type})
+              
+                    if (status.isFinalized) {
+                      console.log('Completed at block hash', status.asFinalized.toHex());
+                      console.log('Events:');
+              
+                      events.forEach(({ phase, event: { data, method, section } }) => {
+                        console.log('\t', phase.toString(), `: ${section}.${method}`, data.toString());
+                      });
+                    }
+                  });
         });
     }
 
@@ -24,7 +39,18 @@ export class ExitList extends ReactiveComponent {
             this.state.exitList.map((exitId) =>
 				<List.Item key={exitId}>
 					<List.Content floated='right'>
-						<Button size='small' onClick={() => this.handleExitFinalize(this.state.src, exitId)}>ExitFinalize</Button>
+                        <Button 
+                            icon='send'
+                            size='small'
+                            color={styleStatus(this.state.status).color}
+                            content = 'ExitFinalize'
+                            onClick={() => this.handleExitFinalize(this.state.src, exitId)}
+                            label={this.state.status ? (<TransactionProgressLabel
+                                value={this.state.status}
+                                showContent={false}
+                                showIcon={true}
+                            />) : null}
+                        />
 					</List.Content>
 					<List.Content>
                         <List.Content floated='left'>

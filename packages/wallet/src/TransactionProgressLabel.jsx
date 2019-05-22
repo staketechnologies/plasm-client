@@ -4,12 +4,15 @@ const {Label, Icon} = require('semantic-ui-react');
 
 function styleStatus (value) {
 	console.log('styleStatus', value);
+	if (!value) {
+		return ({color: 'grey'})
+	}
 	return (
 		value.signing ? { text: 'signing', icon: 'key', color: 'grey' } :
 		value.sending ? { text: 'sending', icon: 'wifi', color: 'grey' } :
-		(value.broadcast || value === 'ready') ? { text: 'finalising', icon: 'cog', color: 'grey', loading: true } :
-		value.finalized ? { text: 'finalized', icon: 'check', color: 'green' } :
-		value.failed ? { text: 'failed', icon: 'exclamation', color: 'red' } :
+		(value.broadcast || value === 'ready' || value === 'Broadcast' || value === 'Ready') ? { text: 'finalising', icon: 'cog', color: 'grey', loading: true } :
+		(value.finalized || value === 'Finalized') ? { text: 'finalized', icon: 'check', color: 'green' } :
+		(value.failed || value == 'Invalid') ? { text: 'failed', icon: 'exclamation', color: 'red' } :
 		{ text: value.toString(), icon: 'question', color: 'blue' }
 	);
 }
