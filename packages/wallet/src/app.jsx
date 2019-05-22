@@ -485,7 +485,6 @@ class ExitFinalizeSegment extends React.Component {
 		this.exitList = new Bond;
 		create('ws://127.0.0.1:9944').then((api) => {
 			this.source.tie((source) => {
-				console.log('getUnfinalizeExitIdList!!');
 				getUnfinalizeExitIdList(api, source)
 					.then((ret) => this.exitList.changed(ret))
 			})

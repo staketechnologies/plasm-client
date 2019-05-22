@@ -13,7 +13,6 @@ export class ExitList extends ReactiveComponent {
     handleExitFinalize(src, exitId) {
 		create('ws://127.0.0.1:9944').then((api) => {
             let signer = KeyGenerator.instance.from(secretStore().find(src).uri.slice(2));
-            console.log('handleExitFinalize: ', signer, exitId);
             api.tx.parentMvp
                 .exitFinalize(exitId)
                 .signAndSend(signer);
@@ -21,7 +20,6 @@ export class ExitList extends ReactiveComponent {
     }
 
 	readyRender () {
-        console.log('exitList: ', this.state.exitList)
 		return <List divided verticalAlign='bottom' style={{padding: '0 0 4px 4px', overflow: 'auto', maxHeight: '20em'}}>{
             this.state.exitList.map((exitId) =>
 				<List.Item key={exitId}>

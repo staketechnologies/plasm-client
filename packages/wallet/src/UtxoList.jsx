@@ -5,42 +5,6 @@ import {runtime, secretStore} from 'oo7-substrate';
 import Identicon from 'polkadot-identicon';
 import { create, KeyGenerator, getProof, genUtxo } from '@plasm/util';
 
-
-export class SecretItem extends ReactiveComponent {
-	constructor () {
-		super()
-
-		this.state = {
-			display: null
-		}
-	}
-
-	render () {
-		let that = this
-		let toggle = () => {
-			let display = that.state.display
-			if (display === null) {
-				display = 'uri'
-				window.setTimeout(() => that.setState({ display: null }), 5000)
-				that.setState({ display })
-			}
-		}
-		return this.state.display === 'uri'
-			? <Label
-				basic
-				icon='privacy'
-				onClick={toggle}
-				content='URI '
-				detail={this.props.uri}
-			/>
-			: <Popup trigger={<Icon
-				circular
-				className='eye slash'
-				onClick={toggle}
-			/>} content='Click to uncover seed/secret' />
-	}
-}
-
 export class UtxoList extends ReactiveComponent {
 	constructor () {
 		super(["src", "utxoList"])
@@ -49,12 +13,10 @@ export class UtxoList extends ReactiveComponent {
     handleExit(src, txHash, outIndex) {
 		create('ws://127.0.0.1:9944').then((api) => {
             let signer = KeyGenerator.instance.from(secretStore().find(src).uri.slice(2));
-            console.log('handleExit: ', signer, txHash, outIndex);
             getProof(api, signer, [txHash, outIndex])
                 .then((proofs) => {
                     genUtxo(api, [txHash, outIndex])
                         .then((eUtxo) => {
-                            console.log('exit!: ', proofs[0], proofs[4], proofs[5], proofs[3], eUtxo);
                             api.tx.parentMvp
                                 .exitStart(proofs[0], proofs[4], proofs[5], proofs[3], eUtxo)
                                 .signAndSend(signer);
