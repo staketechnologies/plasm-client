@@ -12,6 +12,7 @@ class TransactButton extends ReactiveComponent {
 		this.handleClick = this.handleClick.bind(this);
 	}
 	handleClick () {
+		console.log('handleClick!!', this.props.tx)
 		let begin = false;
 		let s = this.state;
 		if (s.status) {
@@ -27,6 +28,7 @@ class TransactButton extends ReactiveComponent {
 		}
 	}
 	execNext () {
+		console.log('execNext!!', this.props.tx)
 		let s = this.state;
 		let single = typeof(this.props.tx) === 'function' || this.props.tx.length === undefined;
 		if ((single && s.index === 0) || s.index < this.props.tx.length) {
@@ -47,6 +49,8 @@ class TransactButton extends ReactiveComponent {
 		this.setState(s);
 	}
 	render () {
+		console.log('render!!', this.props.tx)
+
 		if (!this.props.tx) {
 			return (<span/>);
 		}

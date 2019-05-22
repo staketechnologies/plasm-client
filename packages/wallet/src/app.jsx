@@ -19,7 +19,7 @@ import { AddressBookList } from './AddressBookList';
 import { TransformBondButton } from './TransformBondButton';
 import { Pretty } from './Pretty';
 import { ChildPretty } from './ChildPretty';
-import { genTransfer, create } from '@plasm/util';
+import { genTransfer, create, KeyGenerator } from '@plasm/util';
 
 export class App extends ReactiveComponent {
 	constructor() {
@@ -281,9 +281,10 @@ class TransferSegment extends React.Component {
 		
 		create('ws://127.0.0.1:9944').then((api) => {
 			this.genTx.tie(([source, dest, amount]) => {
-				console.log('genTx: ', source, dest, amount)
-				genTransfer(api, singer, source, dest, amount, 0)
-					.then((tx) => this.transfer.changed(tx)); // /signer をどっかから取得
+				let signer = KeyGenerator.instance.from(secretStore().find(source).uri.slice(2));
+				console.log('genTx: ',signer,  source, dest, amount)
+				genTransfer(api, signer, source, dest, Number(amount), 0)
+					.then((tx) => this.transfer.changed(tx.toU8a()));
 			})
 		});
 	}
