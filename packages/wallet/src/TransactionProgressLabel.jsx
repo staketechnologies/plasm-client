@@ -8,8 +8,8 @@ function styleStatus (value) {
 		return ({color: 'grey'})
 	}
 	return (
-		value.signing ? { text: 'signing', icon: 'key', color: 'grey' } :
-		value.sending ? { text: 'sending', icon: 'wifi', color: 'grey' } :
+		(value.signing || value == 'signing') ? { text: 'signing', icon: 'key', color: 'grey' } :
+		(value.sending || value == 'sending') ? { text: 'sending', icon: 'wifi', color: 'grey' } :
 		(value.broadcast || value === 'ready' || value === 'Broadcast' || value === 'Ready') ? { text: 'finalising', icon: 'cog', color: 'grey', loading: true } :
 		(value.finalized || value === 'Finalized') ? { text: 'finalized', icon: 'check', color: 'green' } :
 		(value.failed || value == 'Invalid') ? { text: 'failed', icon: 'exclamation', color: 'red' } :

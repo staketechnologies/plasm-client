@@ -9,18 +9,19 @@ import {create, KeyGenerator, getProof, genExit} from '@plasm/util';
 export class ExitList extends ReactiveComponent {
 	constructor () {
 		super(["src", "exitList"], {
-            status: null
+            status: {}
         })
     }
     
     handleExitFinalize(src, exitId) {
+        this.setState({status: {[exitId]: 'sending'}});
 		create('ws://127.0.0.1:9944').then((api) => {
             let signer = KeyGenerator.instance.from(secretStore().find(src).uri.slice(2));
             api.tx.parentMvp
                 .exitFinalize(exitId)
                 .signAndSend(signer, ({ events = [], status }) => {
                     console.log('Transaction status:', status.type);
-                    this.setState({status: status.type})
+                    this.setState({status: {[exitId]: status.type}});
               
                     if (status.isFinalized) {
                       console.log('Completed at block hash', status.asFinalized.toHex());
@@ -42,11 +43,11 @@ export class ExitList extends ReactiveComponent {
                         <Button 
                             icon='send'
                             size='small'
-                            color={styleStatus(this.state.status).color}
+                            color={styleStatus(this.state.status[exitId]).color}
                             content = 'ExitFinalize'
                             onClick={() => this.handleExitFinalize(this.state.src, exitId)}
-                            label={this.state.status ? (<TransactionProgressLabel
-                                value={this.state.status}
+                            label={this.state.status[exitId] ? (<TransactionProgressLabel
+                                value={this.state.status[exitId]}
                                 showContent={false}
                                 showIcon={true}
                             />) : null}
