@@ -15,11 +15,12 @@ import { TransactButton } from './TransactButton.jsx';
 import { FileUploadBond } from './FileUploadBond.jsx';
 import { StakingStatusLabel } from './StakingStatusLabel';
 import { WalletList, SecretItem } from './WalletList';
+import { UtxoList } from './UtxoList';
 import { AddressBookList } from './AddressBookList';
 import { TransformBondButton } from './TransformBondButton';
 import { Pretty } from './Pretty';
 import { ChildPretty } from './ChildPretty';
-import { genTransfer, create, KeyGenerator } from '@plasm/util';
+import { genTransfer, create, KeyGenerator, getUtxoList } from '@plasm/util';
 
 export class App extends ReactiveComponent {
 	constructor() {
@@ -161,9 +162,14 @@ class AddressBookSegment extends React.Component {
 				<div style={{ fontSize: 'small' }}>lookup account</div>
 				<AccountIdBond bond={this.lookup} />
 				<If condition={this.lookup.ready()} then={<div>
-					<Label>Balance
+					<Label>Parent Balance
 						<Label.Detail>
 							<Pretty value={runtime.balances.balance(this.lookup)} />
+						</Label.Detail>
+					</Label>
+					<Label>Child Balance
+						<Label.Detail>
+							<ChildPretty src={this.lookup} />
 						</Label.Detail>
 					</Label>
 					<Label>Nonce
@@ -227,9 +233,14 @@ class FundingSegment extends React.Component {
 				<div style={{ fontSize: 'small' }}>from</div>
 				<SignerBond bond={this.source} />
 				<If condition={this.source.ready()} then={<span>
-					<Label>Balance
+					<Label>Parent Balance
 						<Label.Detail>
 							<Pretty value={runtime.balances.balance(this.source)} />
+						</Label.Detail>
+					</Label>
+					<Label>Child Balance
+						<Label.Detail>
+							<ChildPretty src={this.source} />
 						</Label.Detail>
 					</Label>
 					<Label>Nonce
@@ -242,13 +253,18 @@ class FundingSegment extends React.Component {
 			<div style={{ paddingBottom: '1em' }}>
 				<div style={{ fontSize: 'small' }}>to</div>
 				<AccountIdBond bond={this.destination} />
-				<If condition={this.destination.ready()} then={
-					<Label>Balance
+				<If condition={this.destination.ready()} then={<span>
+					<Label>Parent Balance
 						<Label.Detail>
 							<Pretty value={runtime.balances.balance(this.destination)} />
 						</Label.Detail>
 					</Label>
-				} />
+					<Label>Child Balance
+						<Label.Detail>
+							<ChildPretty src={this.destination} />
+						</Label.Detail>
+					</Label>
+				</span>} />
 			</div>
 			<div style={{ paddingBottom: '1em' }}>
 				<div style={{ fontSize: 'small' }}>amount</div>
@@ -302,7 +318,12 @@ class TransferSegment extends React.Component {
 				<div style={{ fontSize: 'small' }}>from</div>
 				<SignerBond bond={this.source} />
 				<If condition={this.source.ready()} then={<span>
-					<Label>Balance
+					<Label>Parent Balance
+						<Label.Detail>
+							<Pretty value={runtime.balances.balance(this.source)} />
+						</Label.Detail>
+					</Label>
+					<Label>Child Balance
 						<Label.Detail>
 							<ChildPretty src={this.source} />
 						</Label.Detail>
@@ -317,13 +338,18 @@ class TransferSegment extends React.Component {
 			<div style={{ paddingBottom: '1em' }}>
 				<div style={{ fontSize: 'small' }}>to</div>
 				<AccountIdBond bond={this.destination} />
-				<If condition={this.destination.ready()} then={
-					<Label>Balance
+				<If condition={this.destination.ready()} then={<span>
+					<Label>Parent Balance
+						<Label.Detail>
+							<Pretty value={runtime.balances.balance(this.destination)} />
+						</Label.Detail>
+					</Label>
+					<Label>Child Balance
 						<Label.Detail>
 							<ChildPretty src={this.destination} />
 						</Label.Detail>
 					</Label>
-				} />
+				</span>} />
 			</div>
 			<div style={{ paddingBottom: '1em' }}>
 				<div style={{ fontSize: 'small' }}>amount</div>
@@ -349,7 +375,6 @@ class DepositSegment extends React.Component {
 
 		this.source = new Bond;
 		this.amount = new Bond;
-		this.destination = new Bond;
 	}
 	render() {
 		return <Segment style={{ margin: '1em' }} padded>
@@ -364,9 +389,14 @@ class DepositSegment extends React.Component {
 				<div style={{ fontSize: 'small' }}>from</div>
 				<SignerBond bond={this.source} />
 				<If condition={this.source.ready()} then={<span>
-					<Label>Balance
+					<Label>Parent Balance
 						<Label.Detail>
 							<Pretty value={runtime.balances.balance(this.source)} />
+						</Label.Detail>
+					</Label>
+					<Label>Child Balance
+						<Label.Detail>
+							<ChildPretty src={this.source} />
 						</Label.Detail>
 					</Label>
 					<Label>Nonce
@@ -399,8 +429,13 @@ class ExitSegment extends React.Component {
 		super()
 
 		this.source = new Bond;
-		this.amount = new Bond;
-		this.destination = new Bond;
+		this.utxoList = new Bond;
+		create('ws://127.0.0.1:9944').then((api) => {
+			this.source.tie((source) => {
+				getUtxoList(api, source)
+					.then((ret) => this.utxoList.changed(ret.map(([a,b,c]) => [a,b,c.toString()])));
+			})
+		});
 	}
 	render() {
 		return <Segment style={{ margin: '1em' }} padded>
@@ -411,6 +446,31 @@ class ExitSegment extends React.Component {
 					<Header.Subheader>Send funds from your account to another</Header.Subheader>
 				</Header.Content>
 			</Header>
+			<div style={{ paddingBottom: '1em' }}>
+				<div style={{ fontSize: 'small' }}>from</div>
+				<SignerBond bond={this.source} />
+				<If condition={this.source.ready()} then={<span>
+					<Label>Parent Balance
+						<Label.Detail>
+							<Pretty value={runtime.balances.balance(this.source)} />
+						</Label.Detail>
+					</Label>
+					<Label>Child Balance
+						<Label.Detail>
+							<ChildPretty src={this.source} />
+						</Label.Detail>
+					</Label>
+					<Label>Nonce
+						<Label.Detail>
+							<Pretty value={runtime.system.accountNonce(this.source)} />
+						</Label.Detail>
+					</Label>
+				</span>} />
+			</div>
+			<div style={{ paddingBottom: '1em' }}>
+				<UtxoList utxoList={this.utxoList} />
+			</div>
+
 		</Segment>
 	}
 }
