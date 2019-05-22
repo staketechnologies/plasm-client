@@ -5,7 +5,7 @@ import { Bond, TransformBond } from 'oo7';
 import { ReactiveComponent, If, Rspan } from 'oo7-react';
 import {
 	calls, runtime, chain, system, runtimeUp, ss58Decode, ss58Encode, pretty,
-	addressBook, secretStore, metadata, nodeService, bytesToHex, hexToBytes, AccountId
+	addressBook, secretStore, metadata, nodeService, bytesToHex, hexToBytes, AccountId, addCodecTransform
 } from 'oo7-substrate';
 import Identicon from 'polkadot-identicon';
 import { AccountIdBond, SignerBond } from './AccountIdBond.jsx';
@@ -34,6 +34,7 @@ export class App extends ReactiveComponent {
 		window.system = system;
 		window.that = this;
 		window.metadata = metadata;
+		addCodecTransform("<Tasbalances::Trait>::Balance", 'Balance');
 	}
 
 	readyRender() {
@@ -333,7 +334,7 @@ class TransferSegment extends React.Component {
 				icon='send'
 				tx={{
 					sender: runtime.indices.tryIndex(this.source),
-					call: calls.utxoMvp.execute(this.transfer),
+					call: calls.childMvp.execute(this.transfer),
 					compact: false,
 					longevity: true
 				}}
@@ -359,6 +360,36 @@ class DepositSegment extends React.Component {
 					<Header.Subheader>Send funds from your account to another</Header.Subheader>
 				</Header.Content>
 			</Header>
+			<div style={{ paddingBottom: '1em' }}>
+				<div style={{ fontSize: 'small' }}>from</div>
+				<SignerBond bond={this.source} />
+				<If condition={this.source.ready()} then={<span>
+					<Label>Balance
+						<Label.Detail>
+							<Pretty value={runtime.balances.balance(this.source)} />
+						</Label.Detail>
+					</Label>
+					<Label>Nonce
+						<Label.Detail>
+							<Pretty value={runtime.system.accountNonce(this.source)} />
+						</Label.Detail>
+					</Label>
+				</span>} />
+			</div>
+			<div style={{ paddingBottom: '1em' }}>
+				<div style={{ fontSize: 'small' }}>amount</div>
+				<BalanceBond bond={this.amount} />
+			</div>
+			<TransactButton
+				content="Send"
+				icon='send'
+				tx={{
+					sender: runtime.indices.tryIndex(this.source),
+					call: calls.parentMvp.deposit(this.amount),
+					compact: false,
+					longevity: true
+				}}
+			/>
 		</Segment>
 	}
 }
