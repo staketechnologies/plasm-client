@@ -1,8 +1,11 @@
 {
-  "name": "substrate-ui",
-  "version": "1.0.0",
-  "description": "Gav's Substrate UI",
+  "name": "@plasm/wallet",
+  "version": "0.1.0",
+  "description": "Plasm Substrate UI",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npm-run-all --parallel webpack-dev server",
@@ -20,10 +23,11 @@
   "keywords": [
     "polkadot",
     "substrate",
-    "ui"
+    "ui",
+    "plasm"
   ],
-  "author": "Gav Wood",
-  "license": "ISC",
+  "author": "Takumi Yamashita",
+  "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
