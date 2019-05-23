@@ -120,7 +120,7 @@ export async function getProof(api: any, signer: any, utxo: any) {
     return;
   }
   console.log(currentBlock)
-  await api.tx.childMvp
+  await api.tx.child
     .getProof(currentBlock, utxo[0], utxo[1])
     .signAndSend(signer);
   const proofs = await eventCatch(api, "childMvp", "Proof", 10);
