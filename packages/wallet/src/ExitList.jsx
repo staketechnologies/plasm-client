@@ -17,7 +17,7 @@ export class ExitList extends ReactiveComponent {
         this.setState({status: {[exitId]: 'sending'}});
 		create('ws://127.0.0.1:9944').then((api) => {
             let signer = KeyGenerator.instance.from(secretStore().find(src).uri.slice(2));
-            api.tx.parentMvp
+            api.tx.parent
                 .exitFinalize(exitId)
                 .signAndSend(signer, ({ events = [], status }) => {
                     console.log('Transaction status:', status.type);

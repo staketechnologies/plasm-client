@@ -31,7 +31,7 @@ export class UtxoList extends ReactiveComponent {
                                     [this.key(txHash, outIndex)]: 'Failed'
                                 }});
                             } else {
-                                api.tx.parentMvp
+                                api.tx.parent
                                     .exitStart(proofs[0], proofs[4], proofs[5], proofs[3], eUtxo)
                                     .signAndSend(signer, ({ events = [], status }) => {
                                         console.log('Transaction status:', status.type);
