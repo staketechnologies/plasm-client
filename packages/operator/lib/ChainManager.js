@@ -99,7 +99,7 @@ class ChainManager {
   // eventData = [Hash, ]
   async submitHandle(eventData) {
     console.log("submitHandle...");
-    const hash = await this.parent.tx.parentMvp.submit(eventData[0]).signAndSend(this.operator);
+    const hash = await this.parent.tx.parent.submit(eventData[0]).signAndSend(this.operator);
     console.log("Success submitHandle!: ", hash.toHex());
   }
 
@@ -108,7 +108,7 @@ class ChainManager {
     console.log("commitHandle...");
     const blkHash = eventData[0];
     const blkNum = eventData[1];
-    const hash = await this.child.tx.childMvp.commit(blkNum, blkHash).signAndSend(this.operator);
+    const hash = await this.child.tx.child.commit(blkNum, blkHash).signAndSend(this.operator);
     console.log("Success commitHandle!: ", hash.toHex());
   }
 
@@ -118,7 +118,7 @@ class ChainManager {
     const accountId = eventData[0];
     const balance = eventData[1];
     const tx = await genTransfer(this.child, this.operator, this.operator.address(), accountId.toString(), Number(balance.toString()), this.fee);
-    const hash = await this.child.tx.childMvp.deposit(tx).signAndSend(this.operator);
+    const hash = await this.child.tx.child.deposit(tx).signAndSend(this.operator);
     console.log("Success depositHandle!: ", hash.toHex());
   }
 
@@ -133,7 +133,7 @@ class ChainManager {
     const outIndex = exitInfo.unwrap().get('utxo')[1];
     console.log('txHash: ', txHash);
     console.log('outIndex: ', outIndex);
-    const hash = await this.child.tx.childMvp.exitStart(txHash, outIndex).signAndSend(this.operator);
+    const hash = await this.child.tx.child.exitStart(txHash, outIndex).signAndSend(this.operator);
     console.log("Success exitHandle!: ", hash.toHex());
   }
 }
