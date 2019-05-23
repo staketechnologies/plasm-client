@@ -53,7 +53,7 @@ exports.deposit = async function(api, owner) {
 
   // generate keypair form `${owner}`.
   const keyPair = KeyGenerator.instance.from(owner);
-  const hash = await api.tx.parentMvp
+  const hash = await api.tx.parent
     .deposit(value)
     .signAndSend(keyPair);
 
@@ -73,7 +73,7 @@ exports.exit = async function(parent, child, owner) {
   const proofs = await getProof(child, keyPair, utxo);
   const eUtxo = await genUtxo(child, utxo);
   //blk_num: T::BlockNumber, depth: u32, index: u64, proofs: Vec<T::Hash>, utxo: T::Utxo
-  const hash = await parent.tx.parentMvp
+  const hash = await parent.tx.parent
     .exitStart(proofs[0], proofs[4], proofs[5], proofs[3], eUtxo)
     .signAndSend(keyPair);
   console.log('Success exitStart!: ', hash.toHex());
@@ -87,7 +87,7 @@ exports.exitFinalize = async function(api, owner) {
     console.log('Empty exitId');
     return;
   }
-  const hash = await api.tx.parentMvp
+  const hash = await api.tx.parent
     .exitFinalize(exitId)
     .signAndSend(keyPair);
   console.log('Success exit Finalize!!: ', hash.toHex())
@@ -137,7 +137,7 @@ exports.transfer = async function(api, owner) {
   const destPair = KeyGenerator.instance.from(dest);
   const tx = await genTransfer(api, keyPair, keyPair.address(), destPair.address(), value, 0);
   console.log(tx)
-  const hash = await api.tx.childMvp
+  const hash = await api.tx.child
     .execute(tx)
     .signAndSend(keyPair);
 
