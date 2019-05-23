@@ -223,7 +223,7 @@ typings/
 
 # ts outputs directory dest
 dest/
-dist
+dist/bundle.js
 
 # End of https://www.gitignore.io/api/node,jspm,linux,macos,jetbrains+all
 Last Modified:
