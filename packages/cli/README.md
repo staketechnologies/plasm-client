@@ -1,5 +1,10 @@
 # @plasm/cli
 
+## Run
+```
+yarn cli
+```
+
 ## CLI functions
 ### transfer
 At ChildChain, utxo based transfer A to B value is V.
