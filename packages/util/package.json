@@ -1,6 +1,6 @@
 {
   "name": "@plasm/util",
-  "version": "0.1.12",
+  "version": "0.2.0",
   "description": "Plasm front end API.",
   "main": "dest/src/index.js",
   "publishConfig": {
@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/stakedtechnologies/plasm-client#readme",
   "dependencies": {
-    "@polkadot/api": "^0.78.1"
+    "@polkadot/api": "^0.79.1"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
