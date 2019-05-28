@@ -383,7 +383,7 @@ class DepositSegment extends React.Component {
 			<Header as='h2'>
 				<Icon name='send' />
 				<Header.Content>
-					Deposit Child Wallet from Parent Wallet.
+					Deposit coins from ParentWallet to ChildWallet.
 					<Header.Subheader>Send funds from your account to another</Header.Subheader>
 				</Header.Content>
 			</Header>
@@ -444,7 +444,7 @@ class ExitSegment extends React.Component {
 			<Header as='h2'>
 				<Icon name='send' />
 				<Header.Content>
-					Exit ChildWallet to ParentWallet.
+					Exit coins from ChildWallet to ParentWallet.
 					<Header.Subheader>Send funds from your account to another</Header.Subheader>
 				</Header.Content>
 			</Header>
