@@ -361,10 +361,10 @@ class TransferSegment extends React.Component {
 				content="Send"
 				icon='send'
 				tx={{
-					sender: runtime.indices.tryIndex(this.source),
+					sender: this.source,
 					call: calls.childMvp.execute(this.transfer),
-					compact: false,
-					longevity: true
+					args: this.transfer,
+					child: true
 				}}
 			/>
 		</Segment>

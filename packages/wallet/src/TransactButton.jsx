@@ -23,7 +23,11 @@ class TransactButton extends ReactiveComponent {
 		this.setState(s);
 
 		if (begin) {
-			this.execNext();
+			if (this.props.tx.child) {
+				this.execChild();
+			} else {
+				this.execNext();
+			}
 		}
 	}
 	execNext () {
@@ -45,6 +49,32 @@ class TransactButton extends ReactiveComponent {
 		}
 		s.index++
 		this.setState(s);
+	}
+
+	// sender: runtime.indices.tryIndex(this.source),
+	// call: api.tx.parent.**
+	// args: gen
+	// child: True
+	execChild () {
+		this.setState({status: 'sending'});
+		create('ws://127.0.0.1:9944').then((api) => {
+            let signer = KeyGenerator.instance.from(secretStore().find(this.props.tx.sender).uri.slice(2));
+			this.props.tx
+				.call(this.props.args)
+                .signAndSend(signer, ({ events = [], status }) => {
+                    console.log('Transaction status:', status.type);
+                    this.setState({status: status.type});
+              
+                    if (status.isFinalized) {
+                      console.log('Completed at block hash', status.asFinalized.toHex());
+                      console.log('Events:');
+              
+                      events.forEach(({ phase, event: { data, method, section } }) => {
+                        console.log('\t', phase.toString(), `: ${section}.${method}`, data.toString());
+                      });
+                    }
+                  });
+        });
 	}
 	render () {
 		if (!this.props.tx) {
@@ -91,7 +121,7 @@ class TransactButtonAux extends ReactiveComponent {
 	}
 	render() {
 		let specialColor = this.props.primary || this.props.secondary;
-		let done = this.state.status && (this.state.status.confirmed || this.state.status.scheduled || this.state.status.failed);
+		let done = this.state.status && (this.state == 'Finalized' || this.state.status.confirmed || this.state.status.scheduled || this.state.status.failed);
 		let clickable = !this.state.status || done;
 		let status = this.state.status && styleStatus(this.state.status);
 		let statusColor = status ? status.color : null;
