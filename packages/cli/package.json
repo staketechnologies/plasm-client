@@ -30,7 +30,7 @@
     "co-prompt": "^1.0.0",
     "commander": "^2.9.0",
     "enquirer": "^2.3.0",
-    "shelljs": "^0.7.0"
+    "shelljs": "^0.8.5"
   },
   "devDependencies": {
     "dotenv": "^8.0.0"
